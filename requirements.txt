@@ -1,0 +1,15 @@
+fastapi
+ipykernel
+matplotlib
+numpy
+opencv-contrib-python
+opencv-python
+paddlepaddle
+paddleocr
+pandas
+pillow
+python-multipart
+qrcode
+ultralytics
+uvicorn
+websockets
