@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from backend import database, models, ocr_service
+from backend import database, models, number_plate_recognition
 import sqlite3
 from datetime import datetime
 import os
@@ -54,7 +54,7 @@ async def update_parking_record(record_id: int, exit_time: str):
 @app.post("/extract_plate/")
 async def extract_plate():
     video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "your_video.mp4")
-    number_plate = ocr_service.extract_number_plate(video_path)
+    number_plate = number_plate_recognition.extract_number_plate(video_path)
     if number_plate:
         return {"number_plate": number_plate}
     else:
