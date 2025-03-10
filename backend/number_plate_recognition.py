@@ -155,7 +155,7 @@ def extract_number_plate(video_path: str):
 
 if __name__ == "__main__":
     # Example usage (for testing)
-    video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "your_video.mp4") # path to video.
+    video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "entry_capture_feed.mp4") # path to video.
     number_plate = extract_number_plate(video_path)
     if number_plate:
         print(f"Number plate: {number_plate}")

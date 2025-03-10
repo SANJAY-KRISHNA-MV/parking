@@ -53,9 +53,40 @@ async def update_parking_record(record_id: int, exit_time: str):
 
 @app.post("/extract_plate/")
 async def extract_plate():
-    video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "your_video.mp4")
+    """
+    Extracts the number plate from the video and stores it in the database.
+    """
+    video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "entry_capture_feed.mp4")
     number_plate = number_plate_recognition.extract_number_plate(video_path)
     if number_plate:
-        return {"number_plate": number_plate}
+        entry_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Capture the entry time
+        database.insert_parking_record(number_plate, entry_time)  # Insert the record
+        return {"number_plate": number_plate, "entry_time": entry_time}
+    else:
+        raise HTTPException(status_code=404, detail="Number plate not found")
+    
+@app.post("/process_exit/")
+async def process_exit():
+    """
+    Processes the exit of a vehicle and updates the database.
+    """
+    video_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos", "exit_camera_feed.mp4")  # Adjust the path as needed
+    number_plate = number_plate_recognition.extract_number_plate(video_path)
+    if number_plate:
+        try:
+            # Fetch the entry record from the database
+            entry_record = database.get_entry_record(number_plate)  # You'll need to implement this function in database.py
+            if entry_record:
+                exit_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                entry_time = entry_record.get('entry_time')  # Extract the entry time from the record
+
+                # Update exit time in the database
+                database.update_parking_record(number_plate, exit_time)
+                
+                return {"number_plate": number_plate, "entry_time": entry_time, "exit_time": exit_time}  # Include entry and exit times in the response
+            else:
+                return {"message": f"No entry record found for {number_plate}."}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to process exit: {e}")
     else:
         raise HTTPException(status_code=404, detail="Number plate not found")
