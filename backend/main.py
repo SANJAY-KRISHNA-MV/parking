@@ -3,6 +3,7 @@ from backend import database, models, number_plate_recognition
 import sqlite3
 from datetime import datetime
 import os
+import json
 
 app = FastAPI()
 
@@ -13,6 +14,20 @@ async def startup_event():
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Parking Automation API"}
+
+@app.get("/api/slots") #<-- Add this endpoint
+async def get_slots():
+    # Load your parking layout
+    with open("parking_layout.json", "r") as f:
+        parking_layout = json.load(f)
+
+    # Load your image and process it.
+    image_path = "../videos/parking_layout_setup.jpg" #or whatever your image path is.
+    from slot_management import process_image #adjust the import.
+    slots_data = process_image(image_path)
+
+    # Convert the slot data to a format that can be returned as JSON.
+    return slots_data
 
 @app.post("/parking_records/", response_model=models.ParkingRecord)
 async def create_parking_record(record: models.ParkingRecord):

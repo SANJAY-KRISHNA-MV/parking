@@ -8,7 +8,7 @@ from paddleocr import PaddleOCR
 import os
 
 # Load the YOLO model
-MODEL_PATH = r'../backend/models/PlateYOLO.pt'
+MODEL_PATH = r'../backend/models/PlateRegionDetector.pt'
 model = YOLO(MODEL_PATH)
 
 class PlateOCR:
